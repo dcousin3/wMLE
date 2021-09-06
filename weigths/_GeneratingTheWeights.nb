@@ -1,0 +1,878 @@
+(* Content-type: application/mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 6.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       145,          7]
+NotebookDataLength[     28549,        869]
+NotebookOptionsPosition[     25719,        767]
+NotebookOutlinePosition[     26084,        783]
+CellTagsIndexPosition[     26041,        780]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Generating the wMLE weigths", "Title",
+ CellChangeTimes->{{3.8390871128259144`*^9, 3.8390871234027147`*^9}}],
+
+Cell["Faisons du m\[EAcute]nage ici juste pour g\[EAcute]n\[EAcute]rer les \
+poids.", "Text",
+ CellChangeTimes->{{3.8390874687067165`*^9, 3.8390875111387167`*^9}}],
+
+Cell["\<\
+ATTENTION: ne pas oublier J1 dans J3 et mettre \[AGrave] jour les programmes \
+pour enlever J1 dans J3.\
+\>", "Text",
+ CellChangeTimes->{{3.839087481701517*^9, 3.8390875096567173`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Set the range of weights generated and the default number of replications\
+\>", "Section",
+ CellChangeTimes->{{3.839242343876814*^9, 3.839242353689214*^9}, {
+  3.839242480330015*^9, 3.8392424990032153`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SSizes", "=", 
+   RowBox[{"Range", "[", "100", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Gammas", "=", 
+   RowBox[{"Range", "[", 
+    RowBox[{"0.1", ",", "5", ",", "0.1"}], "]"}]}], ";"}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.839242356013614*^9, 3.8392423874476147`*^9}, {
+  3.839252812808013*^9, 3.8392528136504135`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"NReplications", "=", 
+  SuperscriptBox["2", "20"]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.839242467366415*^9, 3.839242475572015*^9}, {
+  3.8398399551374817`*^9, 3.839839958477482*^9}, {3.83984283908949*^9, 
+  3.8398428412894897`*^9}}],
+
+Cell[BoxData["1048576"], "Output",
+ CellChangeTimes->{
+  3.8392424760712147`*^9, 3.8393244483490725`*^9, 3.8398397416174817`*^9, 
+   3.839839839447482*^9, {3.839839955707482*^9, 3.839839958767482*^9}, {
+   3.83984856186049*^9, 3.8398485777404895`*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Mononotonicity", "[", "list_", "]"}], ":=", 
+  RowBox[{"Position", "[", 
+   RowBox[{
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"list", "\[LeftDoubleBracket]", 
+        RowBox[{"i", ",", 
+         RowBox[{"-", "1"}]}], "\[RightDoubleBracket]"}], "<", 
+       RowBox[{"list", "\[LeftDoubleBracket]", 
+        RowBox[{
+         RowBox[{"i", "+", "1"}], ",", 
+         RowBox[{"-", "1"}]}], "\[RightDoubleBracket]"}]}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", 
+        RowBox[{
+         RowBox[{"Length", "[", "list", "]"}], "-", "1"}]}], "}"}]}], "]"}], 
+    ",", "False"}], "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.839250895663601*^9, 3.839251025564802*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"LaunchKernels", "[", "]"}], ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.7963235750620003`*^9, 3.796323575792*^9}, {
+   3.796324421033*^9, 3.796324421373*^9}, {3.8392421297284126`*^9, 
+   3.8392421301340127`*^9}, 3.839242317824814*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt2D", "[", "fct_", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"res", "=", 
+      RowBox[{"ParallelTable", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"ss", ",", 
+          RowBox[{"fct", "[", "ss", "]"}]}], "}"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{"ss", ",", "SSizes"}], "}"}]}], "\[IndentingNewLine]", 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Print", "[", 
+      RowBox[{"\"\<As a check \>\"", ",", " ", 
+       RowBox[{
+        RowBox[{"Mononotonicity", "[", "res", "]"}], "//", "Length"}]}], 
+      "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Export", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<\\\\\>\"", "<>", 
+        RowBox[{"ToString", "[", "fct", "]"}], "<>", "\"\<.tsv\>\""}], ",", 
+       "res", ",", "\"\<TABLE\>\""}], "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.839251190753203*^9, 3.839251356253604*^9}, 
+   3.839251518462405*^9, {3.8392519888404083`*^9, 3.839251990353608*^9}, {
+   3.8392520213664083`*^9, 3.839252021569208*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt3D", "[", "fct_", "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "res", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"aformat", "[", "line_", "]"}], ":=", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+        "line", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], ",", 
+        RowBox[{"NumberForm", "[", 
+         RowBox[{
+          RowBox[{
+          "line", "\[LeftDoubleBracket]", "2", "\[RightDoubleBracket]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"4", ",", "1"}], "}"}]}], "]"}], ",", 
+        RowBox[{"NumberForm", "[", 
+         RowBox[{
+          RowBox[{
+          "line", "\[LeftDoubleBracket]", "3", "\[RightDoubleBracket]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"18", ",", "15"}], "}"}], ",", 
+          RowBox[{"NumberPadding", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{"\"\< \>\"", ",", "\"\<0\>\""}], "}"}]}]}], "]"}]}], 
+       "}"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     RowBox[{"res", "=", 
+      RowBox[{"ParallelTable", "[", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"ss", ",", 
+          RowBox[{"Chop", "[", 
+           RowBox[{"Round", "[", 
+            RowBox[{"g", ",", "0.001"}], "]"}], "]"}], ",", 
+          RowBox[{"fct", "[", 
+           RowBox[{"ss", ",", "g"}], "]"}]}], "}"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{"ss", ",", "SSizes"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"g", ",", "Gammas"}], "}"}]}], "\[IndentingNewLine]", 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"res", "=", 
+      RowBox[{"Flatten", "[", 
+       RowBox[{"res", ",", "1"}], "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"Export", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<\\\\\>\"", "<>", 
+        RowBox[{"ToString", "[", "fct", "]"}], "<>", "\"\<.tsv\>\""}], ",", 
+       RowBox[{"Map", "[", 
+        RowBox[{"aformat", ",", "res"}], "]"}], ",", "\"\<TABLE\>\""}], 
+      "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.839251190753203*^9, 3.839251356253604*^9}, 
+   3.839251518462405*^9, {3.8392519888404083`*^9, 3.839251990353608*^9}, {
+   3.8392520213664083`*^9, 3.839252021569208*^9}, {3.8392522374108095`*^9, 
+   3.83925226015561*^9}, {3.8392523533032103`*^9, 3.8392523558616104`*^9}, {
+   3.839252722499613*^9, 3.8392527226400127`*^9}, {3.839252891900014*^9, 
+   3.839252900495614*^9}, {3.839253155228016*^9, 3.8392531577240157`*^9}, {
+   3.839253241429216*^9, 3.8392532731908164`*^9}, {3.839253518173218*^9, 
+   3.839253522884418*^9}, {3.839254022942421*^9, 3.839254044486021*^9}, 
+   3.83984287462949*^9}]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "First weight ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["W", "1"], TraditionalForm]]],
+ "\t\t\[Checkmark]"
+}], "Section",
+ CellChangeTimes->{{3.8392423982116146`*^9, 3.8392424015344143`*^9}, {
+  3.8398486254944897`*^9, 3.8398486363844895`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["J", "1"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Median", "(", 
+    SubscriptBox["W", "1"]}], TraditionalForm]]],
+ ")\t\t\t(25; 90 seconds)"
+}], "Subsection",
+ CellChangeTimes->{{3.8390876046139174`*^9, 3.8390876053471174`*^9}, {
+   3.8392419138784113`*^9, 3.8392419237532115`*^9}, {3.8392424086636143`*^9, 
+   3.839242430410015*^9}, {3.8392425453664155`*^9, 3.8392425530884156`*^9}, {
+   3.839242625878016*^9, 3.839242626190016*^9}, {3.83925229775161*^9, 
+   3.83925230798521*^9}, 3.8392541178996215`*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"J1", "[", 
+   RowBox[{"n_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "X", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"X", "=", 
+      RowBox[{"RandomVariate", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Mean", "[", "X", "]"}], "//", "Median"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "J1", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.3936109645*^9, 3.8392417332460103`*^9, {3.8392419264676113`*^9, 
+   3.8392419368260117`*^9}, {3.8392421458900127`*^9, 3.839242149353213*^9}, {
+   3.8392424361820145`*^9, 3.8392424548864145`*^9}, 3.8392424924356155`*^9, {
+   3.839251858604807*^9, 3.839251862083607*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt2D", "[", "J1", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392513089232035`*^9, 3.839251317206804*^9}, {
+  3.8392514634568048`*^9, 3.8392514665456047`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"As a check \"\>", "\[InvisibleSpace]", "25"}],
+  SequenceForm["As a check ", 25],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.8392513300300035`*^9, 3.839251456951605*^9}],
+
+Cell[BoxData["\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\
+\\\\\\\\J1test.tsv\"\>"], "Output",
+ CellChangeTimes->{3.839251330061204*^9, 3.839251456967205*^9}]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["G", "1"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"GeometricMean", "(", 
+    SubscriptBox["W", "1"]}], TraditionalForm]]],
+ ")  \t\t(12; 90 seconds)"
+}], "Subsection",
+ CellChangeTimes->{{3.8390876087011175`*^9, 3.8390876090599174`*^9}, {
+   3.8392426055824156`*^9, 3.8392426183744164`*^9}, {3.83925231054361*^9, 
+   3.83925233190001*^9}, 3.839254119194422*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"G1", "[", 
+   RowBox[{"n_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "X", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"X", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Mean", "[", "X", "]"}], "//", "GeometricMean"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "G1", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.39361096453125*^9, {3.839251376549204*^9, 3.8392514071408043`*^9}, {
+   3.839251864439207*^9, 3.8392518693688073`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt2D", "[", "G1", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392513089232035`*^9, 3.839251317206804*^9}, {
+  3.8392514493700047`*^9, 3.839251474345605*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"As a check \"\>", "\[InvisibleSpace]", "12"}],
+  SequenceForm["As a check ", 12],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.839251585230406*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "89.41920059999999637057044310495257377625`7.972030696273495", 
+   ",", "\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\\\\\\\
+\\G1test.tsv\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.8392515852460055`*^9}]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Second weight ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["W", "2"], TraditionalForm]]],
+ "\t\t\[Checkmark]"
+}], "Section",
+ CellChangeTimes->{{3.839251736815606*^9, 3.8392517396704063`*^9}, {
+  3.8398486400544896`*^9, 3.8398486406444893`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["J", "2"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Median", "(", 
+    SubscriptBox["W", "2"]}], TraditionalForm]]],
+ ")\t\t\t(9; 160 seconds)"
+}], "Subsection",
+ CellChangeTimes->{{3.839087522869917*^9, 3.839087523213117*^9}, {
+   3.8392517333368063`*^9, 3.8392517574544067`*^9}, {3.839252190142809*^9, 
+   3.8392521937464094`*^9}, {3.8392523213076105`*^9, 3.83925232386601*^9}, 
+   3.839254115060422*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"J2", "[", 
+   RowBox[{"n_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "X", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"X", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       FractionBox[
+        RowBox[{"Total", "[", 
+         RowBox[{"X", " ", 
+          RowBox[{"Log", "[", "X", "]"}]}], "]"}], 
+        RowBox[{"Total", "[", "X", "]"}]], "-", 
+       RowBox[{"Mean", "[", 
+        RowBox[{"Log", "[", "X", "]"}], "]"}]}], "//", "Median"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "J2", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.393610964609375*^9, {3.839251826999207*^9, 3.839251874345207*^9}, {
+   3.8392519300216074`*^9, 3.8392519325020075`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt2D", "[", "J2", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392513089232035`*^9, 3.839251317206804*^9}, {
+  3.8392514493700047`*^9, 3.839251474345605*^9}, {3.839251944364808*^9, 
+  3.8392519456284075`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"As a check \"\>", "\[InvisibleSpace]", "9"}],
+  SequenceForm["As a check ", 9],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.8392520009460077`*^9, 3.8392521863988094`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "160.19640100000000870750227477401494979858`8.225252668202637", 
+   ",", "\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\\\\\\\
+\\J2.tsv\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.839252000977208*^9, 3.839252186414409*^9}]
+}, Open  ]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["G", "2"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"GeometricMean", "(", 
+    SubscriptBox["W", "2"]}], TraditionalForm]]],
+ ") \t\t(5; 160 seconds)"
+}], "Subsection",
+ CellChangeTimes->{{3.8390876087011175`*^9, 3.8390876090599174`*^9}, {
+   3.8392426055824156`*^9, 3.8392426183744164`*^9}, {3.839252037216008*^9, 
+   3.8392520409132085`*^9}, {3.839252389869611*^9, 3.8392523948772106`*^9}, 
+   3.8392541120964217`*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"G2", "[", 
+   RowBox[{"n_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "X", "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"X", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       FractionBox[
+        RowBox[{"Total", "[", 
+         RowBox[{"X", " ", 
+          RowBox[{"Log", "[", "X", "]"}]}], "]"}], 
+        RowBox[{"Total", "[", "X", "]"}]], "-", 
+       RowBox[{"Mean", "[", 
+        RowBox[{"Log", "[", "X", "]"}], "]"}]}], "//", "GeometricMean"}]}]}], 
+   "\[IndentingNewLine]", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "G2", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.39361096453125*^9, {3.839251376549204*^9, 3.8392514071408043`*^9}, {
+   3.839251864439207*^9, 3.8392518693688073`*^9}, {3.839252052348008*^9, 
+   3.839252061583208*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt2D", "[", "G2", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392513089232035`*^9, 3.839251317206804*^9}, {
+  3.8392514493700047`*^9, 3.839251474345605*^9}, {3.8392520663412085`*^9, 
+  3.8392520667156086`*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"As a check \"\>", "\[InvisibleSpace]", "5"}],
+  SequenceForm["As a check ", 5],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.8392523776236105`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "162.36480109999999399406078737229108810425`8.231091798129905", 
+   ",", "\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\\\\\\\
+\\G2.tsv\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.8392523776392107`*^9}]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Third weight ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["W", "3"], TraditionalForm]]],
+ "\t\tREFAIRE!!! D\[CapitalEAcute]BUT 18h30."
+}], "Section",
+ CellChangeTimes->{{3.8398428543494897`*^9, 3.8398428603694897`*^9}, {
+  3.8398486105144897`*^9, 3.8398486166944895`*^9}}],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["W", "3"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  RowBox[{"Agg", 
+   RowBox[{"(", 
+    RowBox[{
+     FractionBox["1", "n"], 
+     RowBox[{
+      UnderoverscriptBox["\[Sum]", 
+       RowBox[{"i", "=", "1"}], "n"], 
+      RowBox[{
+       SubscriptBox["Z", "i"], "\[Times]", 
+       FractionBox[
+        RowBox[{
+         FractionBox["1", "n"], 
+         RowBox[{
+          UnderoverscriptBox["\[Sum]", 
+           RowBox[{"i", "=", "1"}], "n"], 
+          SuperscriptBox[
+           SubscriptBox["Z", "i"], 
+           RowBox[{
+            RowBox[{"-", "1"}], "/", "\[Gamma]"}]]}]}], 
+        RowBox[{
+         FractionBox["1", "n"], 
+         RowBox[{
+          UnderoverscriptBox["\[Sum]", 
+           RowBox[{"i", "=", "1"}], "n"], 
+          SuperscriptBox[
+           SubscriptBox["Z", "i"], 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"\[Gamma]", "-", "1"}], ")"}], "/", 
+            "\[Gamma]"}]]}]}]]}]}]}], ")"}]}]]]
+}], "Text",
+ CellChangeTimes->{{3.839083532164314*^9, 3.839083533400314*^9}, {
+  3.8392538003148193`*^9, 3.8392538121708193`*^9}, {3.8392540760292215`*^9, 
+  3.8392540896012216`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["J", "3"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Median", "(", 
+    SubscriptBox["W", "3"]}], TraditionalForm]]],
+ ")\t\t\t(7.4 heures)"
+}], "Subsection",
+ CellChangeTimes->{{3.839083470196314*^9, 3.8390834706263137`*^9}, {
+  3.83925383224802*^9, 3.83925385475882*^9}, {3.839254096870822*^9, 
+  3.8392541096316214`*^9}, {3.839291131301859*^9, 3.8392911332986593`*^9}, {
+  3.8399010118821883`*^9, 3.8399010130989885`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"J3", "[", 
+   RowBox[{"n_", ",", "\[Gamma]_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"Z1", ",", " ", "Z2"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Z1", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Z2", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mean", "[", "Z1", "]"}], 
+       FractionBox[
+        RowBox[{"Total", "[", 
+         SuperscriptBox["Z2", 
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "\[Gamma]"}]], "]"}], 
+        RowBox[{"Total", "[", 
+         SuperscriptBox["Z2", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"\[Gamma]", "-", "1"}], ")"}], "/", "\[Gamma]"}]], 
+         "]"}]]}], "//", "Median"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "J3", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.393610964671875*^9, {3.839083581352314*^9, 3.839083597559314*^9}, {
+   3.8390841905283136`*^9, 3.839084228562314*^9}, {3.839252509303211*^9, 
+   3.839252655294812*^9}, {3.8393244786910725`*^9, 3.839324503401473*^9}, {
+   3.8398397593374815`*^9, 3.839839806027482*^9}, {3.8398398490974817`*^9, 
+   3.839839861157482*^9}, {3.839839893187482*^9, 3.839839918417482*^9}, {
+   3.8398427681394897`*^9, 3.8398427704094896`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"one", " ", "test"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"J3", "[", 
+   RowBox[{"2", ",", "1.00"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.8393244500962725`*^9, 3.839324458801072*^9}, {
+   3.8393245912606735`*^9, 3.8393245957534733`*^9}, {3.8398397816374817`*^9, 
+   3.839839783417482*^9}, 3.8398398195474815`*^9, {3.839839853307482*^9, 
+   3.839839853477482*^9}}],
+
+Cell[BoxData["1.6779245191139047`"], "Output",
+ CellChangeTimes->{{3.8393244602986727`*^9, 3.839324515569473*^9}, {
+  3.839324589700673*^9, 3.8393245968142734`*^9}, {3.839839743557482*^9, 
+  3.839839863987482*^9}, {3.8398398950874815`*^9, 3.8398399319674816`*^9}, {
+  3.8398485638004894`*^9, 3.8398485880804896`*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt3D", "[", "J3", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392528374404135`*^9, 3.8392528409972134`*^9}, {
+  3.8392530280880146`*^9, 3.839253032128415*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "26851.2105349999983445741236209869384765625`10.449563783085022", 
+   ",", "\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\\\\\\\
+\\J3.tsv\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.8392528650056133`*^9, 3.8392530560276146`*^9, 3.839253200292016*^9, 
+   3.839253247747216*^9, 3.8392532803044167`*^9, 3.8392533264024167`*^9, 
+   3.839253537969618*^9, 3.8392536053772182`*^9, {3.839253668728819*^9, 
+   3.8392536935952187`*^9}, 3.8392537519548197`*^9, 3.8392772007089696`*^9, 
+   3.839840082387282*^9, 3.8398754439710245`*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["G", "3"], TraditionalForm]]],
+ " = ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"GeometricMean", "(", 
+    SubscriptBox["W", "3"]}], TraditionalForm]]],
+ ", \[Gamma])\t\t(7.4 heures)"
+}], "Subsection",
+ CellChangeTimes->{{3.8390834746483135`*^9, 3.8390834750143137`*^9}, {
+  3.83925386092082*^9, 3.83925386305802*^9}, {3.8392538969880204`*^9, 
+  3.83925391191722*^9}, {3.8392541028924217`*^9, 3.839254107993622*^9}, {
+  3.839324533509473*^9, 3.839324540607473*^9}, {3.8399010208365884`*^9, 
+  3.839901031116988*^9}, {3.8399010903033886`*^9, 3.8399010906621885`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"G3", "[", 
+   RowBox[{"n_", ",", "\[Gamma]_", ",", 
+    RowBox[{"nrepl_:", "NReplications"}]}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"Z1", ",", "Z2"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Z1", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"Z2", "=", 
+      RowBox[{"RandomReal", "[", 
+       RowBox[{
+        RowBox[{"ExponentialDistribution", "[", "1", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"n", ",", "nrepl"}], "}"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Mean", "[", "Z1", "]"}], 
+       FractionBox[
+        RowBox[{"Total", "[", 
+         SuperscriptBox["Z2", 
+          RowBox[{
+           RowBox[{"-", "1"}], "/", "\[Gamma]"}]], "]"}], 
+        RowBox[{"Total", "[", 
+         SuperscriptBox["Z2", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"\[Gamma]", "-", "1"}], ")"}], "/", "\[Gamma]"}]], 
+         "]"}]]}], "//", "GeometricMean"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"DistributeDefinitions", "[", "G3", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.3936109646875*^9, {3.83925391664402*^9, 3.8392539518220205`*^9}, {
+   3.839253988045221*^9, 3.839253990010821*^9}, {3.8398427605294895`*^9, 
+   3.8398427911994896`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"doIt3D", "[", "G3", "]"}], "//", "AbsoluteTiming"}]], "Input",
+ CellChangeTimes->{{3.8392528374404135`*^9, 3.8392528409972134`*^9}, {
+  3.8392530280880146`*^9, 3.839253032128415*^9}, {3.8392539979668207`*^9, 
+  3.839253998216421*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "25634.4451641999985440634191036224365234375`10.429423835222455", 
+   ",", "\<\"C:\\\\Users\\\\DenisCousineau\\\\Desktop\\\\wMLE\\\\weigths\\\\\\\
+\\G3.tsv\"\>"}], "}"}]], "Output",
+ CellChangeTimes->{3.8393004013563185`*^9, 3.839901078494189*^9}]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1236, 766},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+ShowSelection->True,
+FrontEndVersion->"10.0 for Microsoft Windows (64-bit) (December 4, 2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[567, 22, 114, 1, 101, "Title"],
+Cell[684, 25, 163, 2, 30, "Text"],
+Cell[850, 29, 195, 4, 30, "Text"],
+Cell[CellGroupData[{
+Cell[1070, 37, 217, 4, 70, "Section"],
+Cell[1290, 43, 400, 10, 52, "Input",
+ InitializationCell->True],
+Cell[CellGroupData[{
+Cell[1715, 57, 280, 6, 31, "Input",
+ InitializationCell->True],
+Cell[1998, 65, 252, 4, 31, "Output"]
+}, Open  ]],
+Cell[2265, 72, 768, 21, 31, "Input",
+ InitializationCell->True],
+Cell[3036, 95, 291, 6, 31, "Input",
+ InitializationCell->True],
+Cell[3330, 103, 1301, 32, 172, "Input",
+ InitializationCell->True],
+Cell[4634, 137, 2819, 65, 212, "Input",
+ InitializationCell->True]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7490, 207, 264, 8, 56, "Section"],
+Cell[CellGroupData[{
+Cell[7779, 219, 592, 15, 49, "Subsection"],
+Cell[8374, 236, 1002, 25, 112, "Input"],
+Cell[CellGroupData[{
+Cell[9401, 265, 218, 4, 31, "Input"],
+Cell[9622, 271, 226, 5, 23, "Print"],
+Cell[9851, 278, 178, 2, 31, "Output"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[10078, 286, 445, 13, 41, "Subsection"],
+Cell[10526, 301, 856, 23, 112, "Input"],
+Cell[CellGroupData[{
+Cell[11407, 328, 216, 4, 31, "Input"],
+Cell[11626, 334, 202, 5, 23, "Print"],
+Cell[11831, 341, 268, 6, 31, "Output"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12160, 354, 263, 8, 70, "Section"],
+Cell[CellGroupData[{
+Cell[12448, 366, 489, 14, 49, "Subsection"],
+Cell[12940, 382, 1084, 30, 146, "Input"],
+Cell[CellGroupData[{
+Cell[14049, 416, 267, 5, 31, "Input"],
+Cell[14319, 423, 226, 5, 23, "Print"],
+Cell[14548, 430, 285, 6, 31, "Output"]
+}, Open  ]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[14882, 442, 502, 14, 41, "Subsection"],
+Cell[15387, 458, 1140, 31, 146, "Input"],
+Cell[CellGroupData[{
+Cell[16552, 493, 269, 5, 31, "Input"],
+Cell[16824, 500, 202, 5, 23, "Print"],
+Cell[17029, 507, 265, 6, 31, "Output"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17355, 520, 290, 8, 70, "Section"],
+Cell[17648, 530, 1195, 39, 54, "Text"],
+Cell[CellGroupData[{
+Cell[18868, 573, 507, 14, 49, "Subsection"],
+Cell[19378, 589, 1831, 47, 177, "Input"],
+Cell[CellGroupData[{
+Cell[21234, 640, 425, 9, 52, "Input"],
+Cell[21662, 651, 317, 4, 31, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22016, 660, 218, 4, 31, "Input"],
+Cell[22237, 666, 590, 11, 31, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22876, 683, 620, 15, 49, "Subsection"],
+Cell[23499, 700, 1582, 44, 177, "Input"],
+Cell[CellGroupData[{
+Cell[25106, 748, 269, 5, 31, "Input"],
+Cell[25378, 755, 289, 6, 31, "Output"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
