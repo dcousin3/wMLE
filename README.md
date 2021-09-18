@@ -12,7 +12,9 @@ putative population shape parameter. The weights may
 be expanded in the near future.
 
 These scripts should be considered the official implementation
-of the w-MLE technique. 
+of the w-MLE technique. If implementation in other programming 
+language are required, let me know by email or by opening
+an issue. 
 
 ## Reference
 
