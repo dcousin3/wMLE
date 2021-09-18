@@ -7,7 +7,7 @@ weighted-maximum likelihood method.
 
 All three scripts requires weights that are precomputed
 to gain speed. They are computed for some sample sizes 
-(1 to 64) and --regarding the third weight-- for some
+(1 to 100) and --regarding the third weight-- for some
 putative population shape parameter. The weights may 
 be expanded in the near future.
 
